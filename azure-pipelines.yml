@@ -7,16 +7,42 @@ trigger:
 - master
 
 pool:
-  #vmImage: ubuntu-latest
   name: 'Default'
 
-steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.x'
-  displayName: 'Install Node.js'
+stages:
+- stage: Build
+  displayName: 'Build Stage'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build Job'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
 
-- script: |
-    npm install
-    npm run build
-  displayName: 'npm install and build'
+    - checkout: self
+
+    - script: |
+        npm install
+        npm run build
+      displayName: 'npm install and build'
+
+- stage: Test
+  displayName: 'Test Stage'
+  jobs:
+  - job: TestJob
+    displayName: 'Test Job'
+    steps:
+    - task: NodeTool@0
+      inputs:
+        versionSpec: '10.x'
+      displayName: 'Install Node.js'
+
+    - checkout: self
+
+    - script: |
+        npm install
+        npm test
+      displayName: 'npm install and run tests'
+
